@@ -2,6 +2,7 @@
 mod state;
 
 pub use state::State;
+use winit::platform::windows::{EventLoopExtWindows, WindowExtWindows};
 
 use crate::clipboard::{self, Clipboard};
 use crate::conversion;
@@ -17,6 +18,7 @@ use iced_graphics::window;
 use iced_native::program::Program;
 use iced_native::user_interface::{self, UserInterface};
 
+use std::ffi::c_void;
 use std::mem::ManuallyDrop;
 
 /// An interactive, native cross-platform application.
@@ -99,6 +101,9 @@ pub trait Application: Program {
     fn should_exit(&self) -> bool {
         false
     }
+
+    /// Questionable function
+    fn hwnd(&self, hwnd: *mut c_void);
 }
 
 /// Runs an [`Application`] with an executor, compositor, and the provided
@@ -119,7 +124,8 @@ where
     let mut debug = Debug::new();
     debug.startup_started();
 
-    let event_loop = EventLoop::with_user_event();
+    // let event_loop = EventLoop::with_user_event();
+    let event_loop = EventLoop::new_any_thread();
     let mut proxy = event_loop.create_proxy();
 
     let mut runtime = {
@@ -145,8 +151,13 @@ where
             event_loop.primary_monitor(),
             settings.id,
         )
+        .with_decorations(false)
+        .with_visible(false)
+        .with_resizable(false)
         .build(&event_loop)
         .map_err(Error::WindowCreationFailed)?;
+
+    runtime.enter(|| application.hwnd(window.hwnd()));
 
     #[cfg(target_arch = "wasm32")]
     {

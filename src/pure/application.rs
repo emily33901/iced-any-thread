@@ -122,6 +122,9 @@ pub trait Application: Sized {
     {
         <Instance<Self> as crate::Application>::run(settings)
     }
+
+    /// Gets the hwnd on the window associated with this
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void);
 }
 
 struct Instance<A: Application> {
@@ -182,5 +185,9 @@ where
 
     fn should_exit(&self) -> bool {
         A::should_exit(&self.application)
+    }
+
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void) {
+        A::hwnd(&self.application, hwnd)
     }
 }

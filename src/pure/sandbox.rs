@@ -116,4 +116,8 @@ where
     fn should_exit(&self) -> bool {
         T::should_exit(self)
     }
+
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void) {
+        todo!()
+    }
 }

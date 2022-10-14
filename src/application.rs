@@ -216,6 +216,9 @@ pub trait Application: Sized {
             crate::renderer::window::Compositor,
         >(settings.into(), renderer_settings)?)
     }
+
+    /// Questionable function
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void);
 }
 
 struct Instance<A: Application>(A);
@@ -274,5 +277,9 @@ where
 
     fn should_exit(&self) -> bool {
         self.0.should_exit()
+    }
+
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void) {
+        self.0.hwnd(hwnd);
     }
 }
