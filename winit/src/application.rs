@@ -151,9 +151,7 @@ where
             event_loop.primary_monitor(),
             settings.id,
         )
-        .with_decorations(false)
         .with_visible(false)
-        .with_resizable(false)
         .build(&event_loop)
         .map_err(Error::WindowCreationFailed)?;
 
