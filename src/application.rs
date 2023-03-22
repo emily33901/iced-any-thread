@@ -212,6 +212,9 @@ pub trait Application: Sized {
             crate::renderer::window::Compositor<Self::Theme>,
         >(settings.into(), renderer_settings)?)
     }
+
+    /// Gets the hwnd on the window associated with this
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void);
 }
 
 struct Instance<A: Application>(A);
@@ -262,5 +265,9 @@ where
 
     fn scale_factor(&self) -> f64 {
         self.0.scale_factor()
+    }
+
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void) {
+        self.0.hwnd(hwnd)
     }
 }

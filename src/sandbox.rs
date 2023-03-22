@@ -196,4 +196,8 @@ where
     fn scale_factor(&self) -> f64 {
         T::scale_factor(self)
     }
+
+    fn hwnd(&self, hwnd: *mut std::ffi::c_void) {
+        todo!()
+    }
 }

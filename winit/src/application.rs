@@ -25,6 +25,9 @@ use iced_native::user_interface::{self, UserInterface};
 
 pub use iced_native::application::{Appearance, StyleSheet};
 
+use winit::platform::windows::{EventLoopBuilderExtWindows, WindowExtWindows};
+
+use std::ffi::c_void;
 use std::mem::ManuallyDrop;
 
 #[cfg(feature = "trace")]
@@ -101,6 +104,9 @@ where
     fn scale_factor(&self) -> f64 {
         1.0
     }
+
+    /// Questionable function
+    fn hwnd(&self, hwnd: *mut c_void);
 }
 
 /// Runs an [`Application`] with an executor, compositor, and the provided
@@ -128,7 +134,11 @@ where
     #[cfg(feature = "trace")]
     let _ = info_span!("Application", "RUN").entered();
 
-    let event_loop = EventLoopBuilder::with_user_event().build();
+    // let event_loop = EventLoop::with_user_event();
+    // let event_loop = EventLoop::new_any_thread();
+    let event_loop = EventLoopBuilder::with_user_event()
+        .with_any_thread(true)
+        .build();
     let proxy = event_loop.create_proxy();
 
     let runtime = {
@@ -162,6 +172,8 @@ where
     let window = builder
         .build(&event_loop)
         .map_err(Error::WindowCreationFailed)?;
+
+    runtime.enter(|| application.hwnd(window.hwnd() as *mut c_void));
 
     #[cfg(target_arch = "wasm32")]
     {
